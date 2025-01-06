@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Patient
+from .models import Patient , PatientToken
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 
@@ -44,6 +44,23 @@ class RegisterSerializer(serializers.ModelSerializer):
         return PatientSerializer.create(self, validated_data)
 
 
+# class LoginSerializer(serializers.Serializer):
+#     email = serializers.EmailField()
+#     password = serializers.CharField(write_only=True)
+#     token = serializers.CharField(read_only=True)
+
+#     def validate(self, data):
+#         email = data.get('email')
+#         password = data.get('password')
+#         user = authenticate(email=email, password=password)
+#         if not user:
+#             raise serializers.ValidationError({"detail": "Invalid credentials."})
+
+#         token, created = Token.objects.get_or_create(user=user)
+#         data['token'] = token.key
+#         return data
+
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -52,10 +69,18 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')
-        user = authenticate(email=email, password=password)
-        if not user:
+
+        try:
+            patient = Patient.objects.get(email=email)
+        except Patient.DoesNotExist:
             raise serializers.ValidationError({"detail": "Invalid credentials."})
 
-        token, created = Token.objects.get_or_create(user=user)
+        if not patient.check_password(password):
+            raise serializers.ValidationError({"detail": "Invalid credentials."})
+
+        # Get or create a token for the patient
+        token, created = PatientToken.objects.get_or_create(patient=patient)
         data['token'] = token.key
         return data
+
+

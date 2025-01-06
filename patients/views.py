@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-from .models import Patient
+from .models import Patient, PatientToken
 from .serializers import RegisterSerializer, LoginSerializer, PatientSerializer
 from django.shortcuts import render
 
@@ -21,18 +21,42 @@ class RegisterView(APIView):
             return Response({"message": "Patient registered successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            email = serializer.validated_data['email']
-            password = serializer.validated_data['password']
-            user = authenticate(email=email, password=password)
-            if user:
-                token, created = Token.objects.get_or_create(user=user)
-                return Response({"token": token.key}, status=status.HTTP_200_OK)
-            return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"token": serializer.validated_data['token']}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# class LoginView(APIView):
+#     def post(self, request):
+#         serializer = LoginSerializer(data=request.data)
+#         if serializer.is_valid():
+#             email = serializer.validated_data['email']
+#             password = serializer.validated_data['password']
+
+#             # Check if the email exists in the Patient model
+#             try:
+#                 patient = Patient.objects.get(email=email)
+#             except Patient.DoesNotExist:
+#                 return Response(
+#                     {"error": "Invalid email or password."},
+#                     status=status.HTTP_401_UNAUTHORIZED,
+#                 )
+
+#             # Authenticate using email and password
+#             if not patient.check_password(password):  # Validate the password
+#                 return Response(
+#                     {"error": "Invalid email or password."},
+#                     status=status.HTTP_401_UNAUTHORIZED,
+#                 )
+
+#             # Generate or retrieve a token for the authenticated patient
+#             token, created = Token.objects.get_or_create(user=patient)
+#             return Response({"token": token.key}, status=status.HTTP_200_OK)
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PatientDetailView(APIView):
     authentication_classes = [TokenAuthentication]
