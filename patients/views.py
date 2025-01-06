@@ -7,7 +7,12 @@ from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from .models import Patient
 from .serializers import RegisterSerializer, LoginSerializer, PatientSerializer
+from django.shortcuts import render
 
+
+def front(request):
+    context = { }
+    return render(request, "index.html", context)
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
