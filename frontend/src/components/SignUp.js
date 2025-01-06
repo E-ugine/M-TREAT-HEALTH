@@ -8,7 +8,7 @@ export default function SignUp() {
     email: "",
     phone: "",
     password: "",
-    confirmPassword: "",
+    password_confirmation: "",
   });
 
   const dispatch = useDispatch();
@@ -20,7 +20,7 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
+    if (formData.password !== formData.password_confirmation) {
       alert("Passwords do not match");
       return;
     }
@@ -40,43 +40,24 @@ export default function SignUp() {
                 <form onSubmit={handleSubmit}>
                   <p className="mb-4 text-center">Fill in the details below to create your account</p>
                   {Object.keys(formData).map((key) => (
-                    key !== "confirmPassword" && (
-                      <div key={key} className="mb-4">
-                        <label
-                          htmlFor={key}
-                          className="block mb-2 text-sm font-medium text-gray-700 dark:text-neutral-200"
-                        >
-                          {key.charAt(0).toUpperCase() + key.slice(1)}
-                        </label>
-                        <input
-                          type={key === "password" ? "password" : "text"}
-                          id={key}
-                          name={key}
-                          value={formData[key]}
-                          onChange={handleChange}
-                          required
-                          className="w-full rounded-md border p-2 text-sm focus:ring-indigo-500 dark:bg-neutral-800"
-                        />
-                      </div>
-                    )
+                    <div key={key} className="mb-4">
+                      <label
+                        htmlFor={key}
+                        className="block mb-2 text-sm font-medium text-gray-700 dark:text-neutral-200"
+                      >
+                        {key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}
+                      </label>
+                      <input
+                        type={key.includes("password") ? "password" : "text"}
+                        id={key}
+                        name={key}
+                        value={formData[key]}
+                        onChange={handleChange}
+                        required
+                        className="w-full rounded-md border p-2 text-sm focus:ring-indigo-500 dark:bg-neutral-800"
+                      />
+                    </div>
                   ))}
-                  <div className="mb-4">
-                    <label
-                      htmlFor="confirmPassword"
-                      className="block mb-2 text-sm font-medium text-gray-700 dark:text-neutral-200"
-                    >
-                      Confirm Password
-                    </label>
-                    <input
-                      type="password"
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      required
-                      className="w-full rounded-md border p-2 text-sm focus:ring-indigo-500 dark:bg-neutral-800"
-                    />
-                  </div>
                   <button
                     type="submit"
                     className="w-full rounded-md bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600"
@@ -87,7 +68,13 @@ export default function SignUp() {
               </div>
               <div className="text-center mt-4">
                 <p className="text-sm">
-                  Already have an account? <a href="/login" className="text-indigo-500 underline hover:text-indigo-700">Login</a>
+                  Already have an account?{" "}
+                  <a
+                    href="/login"
+                    className="text-indigo-500 underline hover:text-indigo-700"
+                  >
+                    Login
+                  </a>
                 </p>
               </div>
             </div>
