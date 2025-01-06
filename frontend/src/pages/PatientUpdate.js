@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { updatePatientData } from '../services/Api';
-import { updatePatientData as updatePatientSlice } from '../features/patientSlice';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updatePatientData } from "../services/Api";
+import { updatePatientData as updatePatientSlice } from "../features/patientSlice";
+import { useNavigate } from "react-router-dom";
 
-export default function UpdatePatient() {
+export default function PatientUpdate() {
   const { data } = useSelector((state) => state.patient); // Get current patient data from Redux
   const { token } = useSelector((state) => state.auth); // Get authentication token from Redux
-  const [formData, setFormData] = useState({ name: '', phone: '' }); // Local state for form data
+  const [formData, setFormData] = useState({ name: "", phone: "" }); // Local state for form data
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -15,8 +15,8 @@ export default function UpdatePatient() {
   useEffect(() => {
     if (data) {
       setFormData({
-        name: data.name || '',
-        phone: data.phone || '',
+        name: data.name || "",
+        phone: data.phone || "",
       });
     }
   }, [data]);
@@ -32,11 +32,11 @@ export default function UpdatePatient() {
     try {
       const response = await updatePatientData(formData, token); // Call API to update patient data
       dispatch(updatePatientSlice(response.data)); // Update Redux state with new data
-      alert('Details updated successfully!');
-      navigate('/dashboard'); // Redirect to the dashboard after successful update
+      alert("Details updated successfully!");
+      navigate("/dashboard"); // Redirect to the dashboard after successful update
     } catch (error) {
       console.error(error);
-      alert('Failed to update details. Please try again.');
+      alert("Failed to update details. Please try again.");
     }
   };
 
@@ -101,7 +101,7 @@ export default function UpdatePatient() {
               <div className="text-center mt-4">
                 <button
                   className="text-sm text-indigo-500 underline hover:text-indigo-700"
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate("/dashboard")}
                 >
                   Back to Dashboard
                 </button>
