@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginPatient } from "../services/Api";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -13,9 +15,17 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginPatient(formData));
+    await dispatch(loginPatient(formData));
+    
+    // Clear form fields after submission
+    setFormData({
+      email: "",
+      password: "",
+    });
+
+    // Redirect to home or dashboard page upon successful login
+    navigate("/dashboard");
   };
-  
 
   return (
     <section className="gradient-form h-full bg-neutral-200 dark:bg-neutral-700">

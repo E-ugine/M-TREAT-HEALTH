@@ -37,7 +37,8 @@ class PatientToken(models.Model):
     def __str__(self):
         return f"Token for {self.patient.name}"
 
-# Signal to create PatientToken when a Patient is created
+
+# Create a token for each patient when they are created
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 

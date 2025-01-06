@@ -1,8 +1,7 @@
 from rest_framework import serializers
-from .models import Patient , PatientToken
+from .models import Patient, PatientToken
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
-
 
 class PatientSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,23 +43,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         return PatientSerializer.create(self, validated_data)
 
 
-# class LoginSerializer(serializers.Serializer):
-#     email = serializers.EmailField()
-#     password = serializers.CharField(write_only=True)
-#     token = serializers.CharField(read_only=True)
-
-#     def validate(self, data):
-#         email = data.get('email')
-#         password = data.get('password')
-#         user = authenticate(email=email, password=password)
-#         if not user:
-#             raise serializers.ValidationError({"detail": "Invalid credentials."})
-
-#         token, created = Token.objects.get_or_create(user=user)
-#         data['token'] = token.key
-#         return data
-
-
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
@@ -82,5 +64,3 @@ class LoginSerializer(serializers.Serializer):
         token, created = PatientToken.objects.get_or_create(patient=patient)
         data['token'] = token.key
         return data
-
-

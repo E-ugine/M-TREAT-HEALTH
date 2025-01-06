@@ -25,6 +25,15 @@ export default function SignUp() {
       return;
     }
     dispatch(registerPatient(formData));
+    
+    // Clear form fields after submission
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      password_confirmation: "",
+    });
   };
 
   return (

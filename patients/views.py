@@ -9,10 +9,10 @@ from .models import Patient, PatientToken
 from .serializers import RegisterSerializer, LoginSerializer, PatientSerializer
 from django.shortcuts import render
 
-
 def front(request):
     context = { }
     return render(request, "index.html", context)
+
 class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
@@ -21,42 +21,12 @@ class RegisterView(APIView):
             return Response({"message": "Patient registered successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             return Response({"token": serializer.validated_data['token']}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# class LoginView(APIView):
-#     def post(self, request):
-#         serializer = LoginSerializer(data=request.data)
-#         if serializer.is_valid():
-#             email = serializer.validated_data['email']
-#             password = serializer.validated_data['password']
-
-#             # Check if the email exists in the Patient model
-#             try:
-#                 patient = Patient.objects.get(email=email)
-#             except Patient.DoesNotExist:
-#                 return Response(
-#                     {"error": "Invalid email or password."},
-#                     status=status.HTTP_401_UNAUTHORIZED,
-#                 )
-
-#             # Authenticate using email and password
-#             if not patient.check_password(password):  # Validate the password
-#                 return Response(
-#                     {"error": "Invalid email or password."},
-#                     status=status.HTTP_401_UNAUTHORIZED,
-#                 )
-
-#             # Generate or retrieve a token for the authenticated patient
-#             token, created = Token.objects.get_or_create(user=patient)
-#             return Response({"token": token.key}, status=status.HTTP_200_OK)
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PatientDetailView(APIView):
     authentication_classes = [TokenAuthentication]
