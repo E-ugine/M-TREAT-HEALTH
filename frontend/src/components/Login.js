@@ -15,6 +15,7 @@ export default function Login() {
     e.preventDefault();
     dispatch(loginPatient(formData));
   };
+  
 
   return (
     <section className="gradient-form h-full bg-neutral-200 dark:bg-neutral-700">
