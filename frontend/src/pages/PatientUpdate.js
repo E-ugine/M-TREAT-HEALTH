@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updatePatientData } from "../services/Api";
-import { updatePatientData as updatePatientSlice } from "../features/patientSlice";
+import { fetchPatientData } from "../services/Api"; // For refreshing data
 import { useNavigate } from "react-router-dom";
 
 export default function PatientUpdate() {
@@ -30,12 +30,12 @@ export default function PatientUpdate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await updatePatientData(formData, token); // Call API to update patient data
-      dispatch(updatePatientSlice(response.data)); // Update Redux state with new data
+      await dispatch(updatePatientData({ formData, token })).unwrap(); // Update data via API
+      await dispatch(fetchPatientData(token)); // Refresh patient data in Redux
       alert("Details updated successfully!");
       navigate("/dashboard"); // Redirect to the dashboard after successful update
     } catch (error) {
-      console.error(error);
+      console.error("Update failed:", error);
       alert("Failed to update details. Please try again.");
     }
   };
