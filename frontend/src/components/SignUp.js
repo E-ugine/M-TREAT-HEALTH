@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { registerPatient } from "../services/Api";
 
 export default function SignUp() {
@@ -12,6 +13,7 @@ export default function SignUp() {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,8 +26,17 @@ export default function SignUp() {
       alert("Passwords do not match");
       return;
     }
-    dispatch(registerPatient(formData));
-    
+    try {
+      // Dispatch the registerPatient thunk and unwrap the response
+      const response = await dispatch(registerPatient(formData)).unwrap();
+      alert("Signup successful! Redirecting to login...");
+      navigate("/login"); // Redirect to login page
+    } catch (error) {
+      // Handle errors from the thunk
+      alert(error?.message || "An error occurred during signup. Please try again.");
+      console.error("Signup error:", error);
+    }
+
     // Clear form fields after submission
     setFormData({
       name: "",

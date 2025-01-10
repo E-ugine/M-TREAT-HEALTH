@@ -1,6 +1,7 @@
 import axios from "axios";
 import { setAuthError, setToken } from "../features/authSlice";
 import { setPatientData, setPatientError } from "../features/patientSlice";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // Create the Axios instance
 const api = axios.create({
@@ -9,17 +10,17 @@ const api = axios.create({
 });
 
 // Redux Thunk: Register Patient
-export const registerPatient = (data) => async (dispatch) => {
-  try {
-    console.log("Registering with data:", data); 
-    const response = await api.post("auth/register/", data);
-    console.log("Register response:", response.data); 
-    dispatch(setToken(response.data.token));
-  } catch (error) {
-    console.error("Registration error:", error.response?.data || error.message);
-    dispatch(setAuthError(error.response?.data?.message || "Registration failed"));
+export const registerPatient = createAsyncThunk(
+  "auth/registerPatient",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await api.post("auth/register/", data);
+      return response.data; // Return the API response on success
+    } catch (error) {
+      return rejectWithValue(error.response?.data || error.message); // Return error with rejectWithValue
+    }
   }
-};
+);
 
 // Redux Thunk: Login Patient
 export const loginPatient = (data) => async (dispatch) => {
