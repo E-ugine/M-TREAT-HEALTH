@@ -2,8 +2,9 @@ from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
 import binascii
 import os
+from django.contrib.auth.models import AbstractBaseUser
 
-class Patient(models.Model):
+class Patient(models.Model):  # Alternatively, inherit from AbstractBaseUser if needed.
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15)
@@ -17,8 +18,17 @@ class Patient(models.Model):
         """Verify the given password against the stored hash."""
         return check_password(raw_password, self.password)
 
+    @property
+    def is_authenticated(self):
+        return True  # All authenticated users should return True here
+
+    @property
+    def is_anonymous(self):
+        return False  # Patients are not anonymous users
+
     def __str__(self):
         return self.name
+
 
 class PatientToken(models.Model):
     patient = models.OneToOneField(Patient, on_delete=models.CASCADE, related_name="token")
@@ -44,5 +54,6 @@ from django.dispatch import receiver
 
 @receiver(post_save, sender=Patient)
 def create_patient_token(sender, instance, created, **kwargs):
-    if created:
+    if created and not hasattr(instance, 'token'):
         PatientToken.objects.create(patient=instance)
+

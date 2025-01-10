@@ -8,6 +8,8 @@ from rest_framework.authtoken.models import Token
 from .models import Patient, PatientToken
 from .serializers import RegisterSerializer, LoginSerializer, PatientSerializer
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 
 def front(request):
     context = { }
@@ -21,6 +23,13 @@ class RegisterView(APIView):
             return Response({"message": "Patient registered successfully"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# class LoginView(APIView):
+#     def post(self, request):
+#         serializer = LoginSerializer(data=request.data)
+#         if serializer.is_valid():
+#             return Response({"token": serializer.validated_data['token']}, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -28,20 +37,40 @@ class LoginView(APIView):
             return Response({"token": serializer.validated_data['token']}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# class PatientDetailView(APIView):
+#     authentication_classes = [TokenAuthentication]
+#     permission_classes = [IsAuthenticated]
+
+#     def get(self, request):
+#         serializer = PatientSerializer(request.user)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+
+#     def put(self, request):
+#         serializer = PatientSerializer(request.user, data=request.data, partial=True)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+from .authentication import PatientTokenAuthentication
+
 class PatientDetailView(APIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [PatientTokenAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        serializer = PatientSerializer(request.user)
+        patient = request.auth.patient  # Extract patient from the token
+        serializer = PatientSerializer(patient)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request):
-        serializer = PatientSerializer(request.user, data=request.data, partial=True)
+        patient = request.auth.patient  # Extract patient from the token
+        serializer = PatientSerializer(patient, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LogoutView(APIView):
     authentication_classes = [TokenAuthentication]
