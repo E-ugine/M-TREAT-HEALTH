@@ -4,7 +4,7 @@ import binascii
 import os
 from django.contrib.auth.models import AbstractBaseUser
 
-class Patient(models.Model):  # Alternatively, inherit from AbstractBaseUser if needed.
+class Patient(models.Model): 
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=15)
@@ -20,11 +20,11 @@ class Patient(models.Model):  # Alternatively, inherit from AbstractBaseUser if 
 
     @property
     def is_authenticated(self):
-        return True  # All authenticated users should return True here
+        return True  
 
     @property
     def is_anonymous(self):
-        return False  # Patients are not anonymous users
+        return False 
 
     def __str__(self):
         return self.name

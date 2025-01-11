@@ -15,7 +15,7 @@ export const registerPatient = createAsyncThunk(
   async (data, { rejectWithValue }) => {
     try {
       const response = await api.post("auth/register/", data);
-      return response.data; // Return the API response on success
+      return response.data; 
     } catch (error) {
       console.error("Register error:", error.response?.data || error.message);
       return rejectWithValue(error.response?.data || error.message);
@@ -28,7 +28,8 @@ export const loginPatient = (data) => async (dispatch) => {
   try {
     const response = await api.post("auth/login/", data);
     dispatch(setToken(response.data.token));
-    localStorage.setItem("token", response.data.token); // Save token to localStorage
+    // Save token to localStorage
+    localStorage.setItem("token", response.data.token); 
   } catch (error) {
     console.error("Login error:", error.response?.data || error.message);
     dispatch(

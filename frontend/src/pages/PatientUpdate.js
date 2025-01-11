@@ -4,8 +4,8 @@ import { updatePatientData, fetchPatientData } from "../services/Api";
 import { useNavigate } from "react-router-dom";
 
 export default function PatientUpdate() {
-  const { data, loading } = useSelector((state) => state.patient); // Patient data
-  const { token } = useSelector((state) => state.auth); // Auth token
+  const { data, loading } = useSelector((state) => state.patient); 
+  const { token } = useSelector((state) => state.auth); 
   const [formData, setFormData] = useState({ name: "", phone: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -25,7 +25,8 @@ export default function PatientUpdate() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const savedToken = token || localStorage.getItem("token"); // Retrieve token from localStorage
+    // Retrieve token from localStorage
+    const savedToken = token || localStorage.getItem("token"); 
     if (!savedToken) {
       alert("Session expired. Please log in again.");
       navigate("/login");
@@ -34,7 +35,7 @@ export default function PatientUpdate() {
 
     try {
       await dispatch(updatePatientData({ formData, token: savedToken })).unwrap();
-      await dispatch(fetchPatientData(savedToken)); // Refresh data
+      await dispatch(fetchPatientData(savedToken));
       alert("Details updated successfully!");
       navigate("/dashboard");
     } catch (error) {
@@ -44,7 +45,7 @@ export default function PatientUpdate() {
   };
 
   const handleBackToDashboard = async () => {
-    const savedToken = token || localStorage.getItem("token"); // Retrieve token from localStorage
+    const savedToken = token || localStorage.getItem("token");
     if (!savedToken) {
       alert("Session expired. Please log in again.");
       navigate("/login");
