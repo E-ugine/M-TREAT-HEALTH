@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchPatientData } from "../services/Api";
 
 export default function Dashboard() {
-  const { data, error } = useSelector((state) => state.patient); // Get patient data from Redux
-  const { token } = useSelector((state) => state.auth); // Get authentication token from Redux
+  const { data, error } = useSelector((state) => state.patient);
+  const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   useEffect(() => {
     if (token && !data) {
-      dispatch(fetchPatientData(token)); // Fetch patient data if not already in Redux
+      dispatch(fetchPatientData(token));
     }
   }, [dispatch, token, data]);
 

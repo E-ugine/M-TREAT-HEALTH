@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updatePatientData } from "../services/Api";
-import { fetchPatientData } from "../services/Api"; // For refreshing data
+import { updatePatientData, fetchPatientData } from "../services/Api";
 import { useNavigate } from "react-router-dom";
 
 export default function PatientUpdate() {
-  const { data } = useSelector((state) => state.patient); // Get current patient data from Redux
-  const { token } = useSelector((state) => state.auth); // Get authentication token from Redux
-  const [formData, setFormData] = useState({ name: "", phone: "" }); // Local state for form data
+  const { data, loading } = useSelector((state) => state.patient); // Patient data
+  const { token } = useSelector((state) => state.auth); // Auth token
+  const [formData, setFormData] = useState({ name: "", phone: "" });
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Populate the form with existing patient data
   useEffect(() => {
     if (data) {
       setFormData({
@@ -21,22 +19,44 @@ export default function PatientUpdate() {
     }
   }, [data]);
 
-  // Handle form field changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const savedToken = token || localStorage.getItem("token"); // Retrieve token from localStorage
+    if (!savedToken) {
+      alert("Session expired. Please log in again.");
+      navigate("/login");
+      return;
+    }
+
     try {
-      await dispatch(updatePatientData({ formData, token })).unwrap(); // Update data via API
-      await dispatch(fetchPatientData(token)); // Refresh patient data in Redux
+      await dispatch(updatePatientData({ formData, token: savedToken })).unwrap();
+      await dispatch(fetchPatientData(savedToken)); // Refresh data
       alert("Details updated successfully!");
-      navigate("/dashboard"); // Redirect to the dashboard after successful update
+      navigate("/dashboard");
     } catch (error) {
       console.error("Update failed:", error);
-      alert("Failed to update details. Please try again.");
+      alert(error.message || "Failed to update details. Please try again.");
+    }
+  };
+
+  const handleBackToDashboard = async () => {
+    const savedToken = token || localStorage.getItem("token"); // Retrieve token from localStorage
+    if (!savedToken) {
+      alert("Session expired. Please log in again.");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      await dispatch(fetchPatientData(savedToken));
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Failed to fetch patient data:", error);
+      alert("Failed to fetch patient data. Please try again.");
     }
   };
 
@@ -51,7 +71,6 @@ export default function PatientUpdate() {
                   <h4 className="mb-6 text-xl font-semibold">Update Details</h4>
                 </div>
                 <form onSubmit={handleSubmit}>
-                  {/* Name Input */}
                   <div className="mb-4">
                     <label
                       htmlFor="name"
@@ -69,8 +88,6 @@ export default function PatientUpdate() {
                       className="w-full rounded-md border p-2 text-sm focus:ring-indigo-500 dark:bg-neutral-800"
                     />
                   </div>
-
-                  {/* Phone Input */}
                   <div className="mb-4">
                     <label
                       htmlFor="phone"
@@ -88,8 +105,6 @@ export default function PatientUpdate() {
                       className="w-full rounded-md border p-2 text-sm focus:ring-indigo-500 dark:bg-neutral-800"
                     />
                   </div>
-
-                  {/* Submit Button */}
                   <button
                     type="submit"
                     className="w-full rounded-md bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600"
@@ -101,7 +116,8 @@ export default function PatientUpdate() {
               <div className="text-center mt-4">
                 <button
                   className="text-sm text-indigo-500 underline hover:text-indigo-700"
-                  onClick={() => navigate("/dashboard")}
+                  onClick={handleBackToDashboard}
+                  disabled={loading}
                 >
                   Back to Dashboard
                 </button>

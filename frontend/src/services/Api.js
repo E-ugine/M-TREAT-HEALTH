@@ -17,7 +17,8 @@ export const registerPatient = createAsyncThunk(
       const response = await api.post("auth/register/", data);
       return response.data; // Return the API response on success
     } catch (error) {
-      return rejectWithValue(error.response?.data || error.message); // Return error with rejectWithValue
+      console.error("Register error:", error.response?.data || error.message);
+      return rejectWithValue(error.response?.data || error.message);
     }
   }
 );
@@ -25,44 +26,61 @@ export const registerPatient = createAsyncThunk(
 // Redux Thunk: Login Patient
 export const loginPatient = (data) => async (dispatch) => {
   try {
-    console.log("Logging in with data:", data); 
     const response = await api.post("auth/login/", data);
-    console.log("Login response:", response.data); 
     dispatch(setToken(response.data.token));
+    localStorage.setItem("token", response.data.token); // Save token to localStorage
   } catch (error) {
-    console.error("Login error:", error.response?.data || error.message); 
-    dispatch(setAuthError(error.response?.data?.message || "Login failed"));
+    console.error("Login error:", error.response?.data || error.message);
+    dispatch(
+      setAuthError(error.response?.data?.message || "Login failed. Please check your credentials.")
+    );
   }
 };
 
 // Redux Thunk: Fetch Patient Data
 export const fetchPatientData = (token) => async (dispatch) => {
+  if (!token) {
+    console.warn("Token is missing for fetchPatientData");
+    dispatch(setPatientError("No token provided. Please log in again."));
+    return;
+  }
+
   try {
-    console.log("Fetching patient data with token:", token); 
     const response = await api.get("patient/", {
       headers: { Authorization: `Token ${token}` },
     });
-    console.log("Fetch patient response:", response.data); 
     dispatch(setPatientData(response.data));
   } catch (error) {
-    console.error("Fetch patient data error:", error.response?.data || error.message); 
-    dispatch(setPatientError(error.response?.data?.message || "Failed to fetch patient data"));
+    console.error("Fetch patient data error:", error.response?.data || error.message);
+    if (error.response?.status === 401) {
+      dispatch(setAuthError("Session expired. Please log in again."));
+    } else {
+      dispatch(setPatientError(error.response?.data?.message || "Failed to fetch patient data"));
+    }
   }
 };
 
 // Redux Thunk: Update Patient Data
-export const updatePatientData = (data, token) => async (dispatch) => {
-  try {
-    console.log("Updating patient data:", data); 
-    const response = await api.put("patient/", data, {
-      headers: { Authorization: `Token ${token}` },
-    });
-    console.log("Update response:", response.data); 
-    dispatch(setPatientData(response.data));
-  } catch (error) {
-    console.error("Update patient data error:", error.response?.data || error.message); 
-    dispatch(setPatientError(error.response?.data?.message || "Failed to update patient data"));
+export const updatePatientData = createAsyncThunk(
+  "patient/update",
+  async ({ formData, token }, { rejectWithValue }) => {
+    if (!token) {
+      return rejectWithValue("No token provided. Please log in again.");
+    }
+
+    try {
+      const response = await api.put("patient/", formData, {
+        headers: { Authorization: `Token ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Update patient data error:", error.response?.data || error.message);
+      if (error.response?.status === 401) {
+        return rejectWithValue("Session expired. Please log in again.");
+      }
+      return rejectWithValue(error.response?.data || "Failed to update patient data.");
+    }
   }
-};
+);
 
 export default api;
