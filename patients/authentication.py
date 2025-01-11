@@ -11,3 +11,4 @@ class PatientTokenAuthentication(TokenAuthentication):
 
         # Set the authenticated patient
         return (token.patient, token)
+    
