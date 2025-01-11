@@ -27,17 +27,13 @@ export default function SignUp() {
       return;
     }
     try {
-      // Dispatch the registerPatient thunk and unwrap the response
       const response = await dispatch(registerPatient(formData)).unwrap();
       alert("Signup successful! Redirecting to login...");
-      navigate("/login"); // Redirect to login page
+      navigate("/login");
     } catch (error) {
-      // Handle errors from the thunk
       alert(error?.message || "An error occurred during signup. Please try again.");
       console.error("Signup error:", error);
     }
-
-    // Clear form fields after submission
     setFormData({
       name: "",
       email: "",
@@ -48,58 +44,50 @@ export default function SignUp() {
   };
 
   return (
-    <section className="gradient-form h-full bg-neutral-200 dark:bg-neutral-700">
-      <div className="container h-full p-10">
-        <div className="flex h-full flex-wrap items-center justify-center text-neutral-800 dark:text-neutral-200">
-          <div className="w-full max-w-md">
-            <div className="block rounded-lg bg-white shadow-lg dark:bg-neutral-800">
-              <div className="px-6 py-8 md:px-8 md:py-10">
-                <div className="text-center">
-                  <h4 className="mb-6 text-xl font-semibold">Sign Up for M-TREAT</h4>
-                </div>
-                <form onSubmit={handleSubmit}>
-                  <p className="mb-4 text-center">Fill in the details below to create your account</p>
-                  {Object.keys(formData).map((key) => (
-                    <div key={key} className="mb-4">
-                      <label
-                        htmlFor={key}
-                        className="block mb-2 text-sm font-medium text-gray-700 dark:text-neutral-200"
-                      >
-                        {key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}
-                      </label>
-                      <input
-                        type={key.includes("password") ? "password" : "text"}
-                        id={key}
-                        name={key}
-                        value={formData[key]}
-                        onChange={handleChange}
-                        required
-                        className="w-full rounded-md border p-2 text-sm focus:ring-indigo-500 dark:bg-neutral-800"
-                      />
-                    </div>
-                  ))}
-                  <button
-                    type="submit"
-                    className="w-full rounded-md bg-indigo-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-600"
-                  >
-                    Sign Up
-                  </button>
-                </form>
-              </div>
-              <div className="text-center mt-4">
-                <p className="text-sm">
-                  Already have an account?{" "}
-                  <a
-                    href="/login"
-                    className="text-indigo-500 underline hover:text-indigo-700"
-                  >
-                    Login
-                  </a>
-                </p>
-              </div>
+    <section className="h-screen bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+      <div className="w-full max-w-lg bg-white rounded-lg shadow-md p-8 dark:bg-gray-900">
+        <h2 className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200 mb-4">
+          Sign Up for M-TREAT
+        </h2>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-400 mb-6">
+          Fill in the details below to create your account
+        </p>
+        <form onSubmit={handleSubmit}>
+          {Object.keys(formData).map((key) => (
+            <div key={key} className="mb-4">
+              <label
+                htmlFor={key}
+                className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
+                {key.charAt(0).toUpperCase() + key.slice(1).replace('_', ' ')}
+              </label>
+              <input
+                type={key.includes("password") ? "password" : "text"}
+                id={key}
+                name={key}
+                value={formData[key]}
+                onChange={handleChange}
+                required
+                className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+              />
             </div>
-          </div>
-        </div>
+          ))}
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            Sign Up
+          </button>
+        </form>
+        <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-4">
+          Already have an account?{" "}
+          <a
+            href="/login"
+            className="text-indigo-600 hover:underline dark:text-indigo-400"
+          >
+            Login
+          </a>
+        </p>
       </div>
     </section>
   );
