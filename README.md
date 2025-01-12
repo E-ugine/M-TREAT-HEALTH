@@ -218,5 +218,5 @@ This project is licensed under the MIT License.
 
 For questions or suggestions, contact:
 - **Email**: agollaeugine@gmail.com.com
-- **GitHub**: [your-username](https://github.com/E-ugine)
+- **GitHub**: [E-ugine](https://github.com/E-ugine)
 
