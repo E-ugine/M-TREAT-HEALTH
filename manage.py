@@ -15,6 +15,12 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    
+    # Default command-line argument to start the development server
+    port = os.environ.get("PORT", "8000")  # Default to port 8000 if not set
+    if len(sys.argv) == 1:  # If no command is provided, run the server
+        sys.argv += ["runserver", f"0.0.0.0:{port}"]
+
     execute_from_command_line(sys.argv)
 
 
