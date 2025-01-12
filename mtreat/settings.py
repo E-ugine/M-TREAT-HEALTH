@@ -1,6 +1,6 @@
 from pathlib import Path
 import os
-import dj_database_url
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -72,12 +72,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'mtreat.wsgi.application'
 
-# Database
 DATABASES = {
-    'default': dj_database_url.config(
-        default='postgres://madmax:9999@localhost:5432/mtreat_db'  # Default fallback
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'mtreat_db',
+        'USER': 'madmax',
+        'PASSWORD': '9999',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
