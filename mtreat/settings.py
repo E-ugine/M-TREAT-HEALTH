@@ -17,13 +17,13 @@ DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'm-treat-health.onrender.com',  # Replace <your-app-name> with your Render app's domain
+    'm-treat-health.onrender.com', 
 ]
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "https://<your-frontend-domain>",  # Add your frontend's production domain
+    "https://m-treat-health-rs8r.onrender.com",  
 ]
 CORS_ALLOW_CREDENTIALS = True
 
