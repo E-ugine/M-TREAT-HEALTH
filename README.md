@@ -89,6 +89,11 @@ To get started, you need the following:
    python manage.py migrate
    ```
 
+3. Migrate the database to create the necessary tables:
+   ```bash
+   python manage.py run migrations
+   ```
+
 3. Create a superuser to access the admin panel:
    ```bash
    python manage.py createsuperuser
